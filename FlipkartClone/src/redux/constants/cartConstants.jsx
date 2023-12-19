@@ -1,0 +1,5 @@
+export const ADD_TO_CART = 'addProductToCart'
+export const REMOVE_FROM_CART = 'removeProductFromCart'
+export const CART_RESET = 'resetProductsInCart'
+export const ADD_TO_CAR_FAIL = 'addProductToCartSuccess'
+export const REMOVE_FROM_CART_FAIL = 'removeProductFromCartFail'

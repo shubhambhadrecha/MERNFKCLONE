@@ -1,0 +1,161 @@
+import React, { useState, useContext } from 'react'
+import { authenticatesSignUp, authenticatesLogin } from '../service/api';
+import { DataContext } from '../context/DataProvider';
+
+
+
+const LoginDialogue = () => {
+    const [showModal, setShowModal] = useState(false);
+
+    const [signUpToggle, setsignUpToggle] = useState(false)
+    const [InvalidUsername, setInvalidUsername] = useState(false)
+
+    const [login, setLogin] = useState({
+        LoginUsername: "",
+        LoginPassword: ""
+    })
+
+    const [signUp, setSignUp] = useState({
+        firstname: "",
+        lastname: "",
+        username: "",
+        email: "",
+        password: "",
+        phone: ""
+    })
+
+    const { setAccount } = useContext(DataContext)
+
+    const handleSignUpInputChange = (e) => {
+        const { name, value } = e.target;
+        setSignUp((prev) => {
+            return { ...prev, [name]: value };
+        })
+    }
+
+    const loginUser = async () => {
+        let response = await authenticatesLogin(login);
+        console.log(response);
+        if (response.status === 200) {
+            setShowModal(false)
+            setAccount(response.data.data.firstname)
+        } else {
+            setInvalidUsername(true)
+        }
+    }
+
+    const onValueChange = (e) => {
+        const { name, value } = e.target;
+        setLogin((prev) => {
+            return { ...prev, [name]: value };
+        })
+    }
+
+
+    const signUpUser = async () => {
+        let response = await authenticatesSignUp(signUp)
+        if (!response) return;
+        setsignUpToggle(false)
+        setShowModal(false)
+        setAccount(signUp.firstname)
+        // console.log(response)
+    }
+
+    return (
+        <>
+            <button
+                className="text-white font-bold uppercase text-sm"
+                type="button"
+                onClick={() => setShowModal(true)}
+            >
+                Login
+            </button>
+            {showModal ? (
+                <>
+                    <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none">
+                        <div className="relative w-auto my-6 mx-auto max-w-3xl">
+                            {
+                                signUpToggle == false ?
+                                    <div className="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
+                                        <div className="flex items-center justify-center p-5 border-b">
+                                            <h3 className="text-3xl font-semibold">
+                                                LOGIN
+                                            </h3>
+                                        </div>
+                                        <div className="relative p-6 flex flex-col gap-4">
+                                            <input type="text" placeholder="Username" onChange={(e) => { onValueChange(e) }} name='LoginUsername' className="px-2 py-1 text-sm border-b-2" />
+                                            {
+                                                InvalidUsername &&
+                                                <p>Incorrect username or Password</p>
+                                            }
+                                            <input type="text" placeholder="Passwords" onChange={(e) => { onValueChange(e) }} name='LoginPassword' className="px-2 py-1 text-sm border-b-2" />
+                                        </div>
+                                        {/*footer*/}
+                                        <div className="flex flex-col items-center justify-center gap-2">
+                                            <button
+                                                className="bg-orange-500 text-white active:bg-emerald-600 font-bold uppercase text-sm px-6 py-3 rounded shadow w-52"
+                                                type="button"
+                                                onClick={() => loginUser()}
+                                            >
+                                                Login
+                                            </button>
+                                            <button
+                                                className="bg-emerald-500 text-white active:bg-emerald-600 font-bold uppercase text-sm px-6 py-3 rounded shadow w-52"
+                                                type="button"
+                                                onClick={() => { setShowModal(false); setsignUpToggle(false); setInvalidUsername(false) }}
+                                            >
+                                                Close
+                                            </button>
+                                        </div>
+                                        <div className='text-blue-500 font-semibold text-center mb-2 mt-4 mx-4'>
+                                            <li className='cursor-pointer' onClick={() => { setsignUpToggle(!signUpToggle) }}>New to Flipkart? Create an account</li>
+                                        </div>
+                                    </div>
+
+                                    :
+                                    <div className="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
+                                        <div className="flex items-center justify-center p-5 border-b">
+                                            <h3 className="text-3xl font-semibold">
+                                                SIGN UP
+                                            </h3>
+                                        </div>
+                                        <div className="relative p-6 flex flex-col gap-4 w-80">
+                                            <input type="text" id='firstname' name='firstname' placeholder='Enter First Name' onChange={(e) => handleSignUpInputChange(e)} className='px-2 py-1 text-sm border-b-2' />
+                                            <input type="text" id='lastnamw' name='lastname' placeholder='Enter Last Name' onChange={(e) => handleSignUpInputChange(e)} className='px-2 py-1 text-sm border-b-2' />
+                                            <input type="text" id='username' name='username' placeholder='Enter Username' onChange={(e) => handleSignUpInputChange(e)} className='px-2 py-1 text-sm border-b-2' />
+                                            <input type="text" id='email' name='email' placeholder='Enter e mail' onChange={(e) => handleSignUpInputChange(e)} className='px-2 py-1 text-sm border-b-2' />
+                                            <input type="text" id='password' name='password' placeholder='Enter Password' onChange={(e) => handleSignUpInputChange(e)} className='px-2 py-1 text-sm border-b-2' />
+                                            <input type="text" id='phone' name='phone' placeholder='Enter Phone' onChange={(e) => handleSignUpInputChange(e)} className='px-2 py-1 text-sm border-b-2' />
+                                        </div>
+                                        {/*footer*/}
+                                        <div className="flex flex-col items-center justify-center gap-2">
+                                            <button
+                                                className="bg-orange-500 text-white active:bg-emerald-600 font-bold uppercase text-sm px-6 py-3 rounded shadow w-52"
+                                                type="button"
+                                                onClick={() => signUpUser()}
+                                            >
+                                                Sign Up
+                                            </button>
+                                            <button
+                                                className="bg-emerald-500 text-white active:bg-emerald-600 font-bold uppercase text-sm px-6 py-3 rounded shadow w-52"
+                                                type="button"
+                                                onClick={() => { setShowModal(false); setsignUpToggle(false) }}
+                                            >
+                                                Close
+                                            </button>
+                                        </div>
+                                        <div className='text-blue-500 font-semibold text-center mb-2 mt-4 mx-4'>
+                                        </div>
+                                    </div>
+                            }
+                        </div>
+                    </div>
+
+                </>
+            ) : null}
+        </>
+    );
+}
+
+
+export default LoginDialogue
